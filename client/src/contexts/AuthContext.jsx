@@ -17,7 +17,10 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   // APIのベースURL設定
-  axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  console.log('🔧 API URL:', apiUrl);
+  console.log('🔧 Environment:', import.meta.env);
+  axios.defaults.baseURL = apiUrl;
 
   useEffect(() => {
     const token = localStorage.getItem('token');
