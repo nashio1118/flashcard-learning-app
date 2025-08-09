@@ -77,10 +77,20 @@ export const initDatabase = async () => {
       console.log('📚 サンプル単語データを挿入中...');
       
       for (const word of sampleWords) {
-        await db.runAsync(
-          'INSERT INTO words (english, japanese, level) VALUES (?, ?, ?)',
-          [word.english, word.japanese, word.level]
-        );
+        // データの検証
+        if (!word.english || !word.japanese) {
+          console.warn('Invalid word data:', word);
+          continue;
+        }
+        
+        try {
+          await db.runAsync(
+            'INSERT INTO words (english, japanese, level) VALUES (?, ?, ?)',
+            [word.english, word.japanese, word.level || 'basic']
+          );
+        } catch (error) {
+          console.error('Failed to insert word:', word, error);
+        }
       }
       
       console.log(`✅ ${sampleWords.length}語のサンプルデータを挿入しました`);

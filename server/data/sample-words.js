@@ -253,7 +253,7 @@ export const sampleWords = [
   { english: "thirsty", japanese: "のどが渇いた", level: "basic" },
   { english: "busy", japanese: "忙しい", level: "basic" },
   { english: "rich", japanese: "豊かな", level: "basic" },
-  { english: "poor", javascript: "貧しい", level: "basic" },
+  { english: "poor", japanese: "貧しい", level: "basic" },
   { english: "fast", japanese: "速い", level: "basic" },
   { english: "slow", japanese: "遅い", level: "basic" },
   { english: "heavy", japanese: "重い", level: "basic" },
