@@ -18,7 +18,14 @@ const limiter = rateLimit({
 });
 
 // ミドルウェア
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://flashcard-learning-cejv5pu9n-nashios-projects.vercel.app',
+    /\.vercel\.app$/
+  ],
+  credentials: true
+}));
 app.use(express.json());
 app.use(limiter);
 
