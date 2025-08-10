@@ -51,8 +51,16 @@ const StudyMode = () => {
 
     setAnswered(true);
     
-    // 即座に次の単語に進む（楽観的更新）
-    nextWord();
+    // 短い遅延後に次の単語に進む（カード状態をリセットしてから）
+    setTimeout(() => {
+      // カード状態を先にリセット
+      setIsFlipped(false);
+      setShowAnswer(false);
+      setAnswered(false);
+      
+      // 次の単語に進む
+      nextWord();
+    }, 300); // 300ms = 0.3秒の短い遅延
     
     // API通信は非同期で実行（エラーハンドリングも含む）
     recordAnswer(currentWord.id, isCorrect).catch(error => {
@@ -175,6 +183,14 @@ const StudyMode = () => {
                 <CheckCircle className="w-5 h-5" />
                 <span>知っている</span>
               </button>
+            </div>
+          )}
+
+          {answered && (
+            <div className="text-center">
+              <div className="glass-morphism rounded-lg p-3">
+                <p className="text-white text-sm">✅ 記録中...</p>
+              </div>
             </div>
           )}
 
