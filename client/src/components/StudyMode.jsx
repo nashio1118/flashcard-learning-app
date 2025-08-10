@@ -21,6 +21,7 @@ const StudyMode = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [answered, setAnswered] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     if (words.length === 0) {
@@ -34,6 +35,7 @@ const StudyMode = () => {
     setIsFlipped(false);
     setShowAnswer(false);
     setAnswered(false);
+    setIsTransitioning(false);
   }, [currentWordIndex]);
 
   const currentWord = getCurrentWord();
@@ -51,11 +53,16 @@ const StudyMode = () => {
     if (answered || !currentWord) return;
 
     setAnswered(true);
+    setIsTransitioning(true);
     
-    // 短い遅延後に次の単語に進む
+    // 即座にカード状態をリセット（裏面を隠す）
+    setIsFlipped(false);
+    setShowAnswer(false);
+    
+    // 少し遅れて次の単語に進む
     setTimeout(() => {
-      nextWord(); // useEffectが自動的に状態をリセット
-    }, 300);
+      nextWord();
+    }, 200);
     
     // API通信は非同期で実行（エラーハンドリングも含む）
     recordAnswer(currentWord.id, isCorrect).catch(error => {
@@ -124,7 +131,7 @@ const StudyMode = () => {
         {/* フラッシュカード */}
         <div className="relative mb-8" style={{ height: '400px' }}>
           <div
-            className={`card-flip w-full h-full cursor-pointer ${isFlipped ? 'flipped' : ''}`}
+            className={`card-flip w-full h-full cursor-pointer ${isFlipped ? 'flipped' : ''} ${isTransitioning ? 'opacity-50' : 'opacity-100'} transition-opacity duration-200`}
             onClick={handleCardClick}
           >
             {/* 表面（英語） */}
