@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Play, BarChart3, Settings, LogOut, Crown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useStudy } from '../contexts/StudyContext';
+import StudyHistoryCharts from './StudyHistoryCharts';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -146,6 +147,9 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* 学習履歴グラフ */}
+        <StudyHistoryCharts />
 
         {/* PWAインストール案内 */}
         <div className="glass-morphism rounded-2xl p-6 mt-6">
