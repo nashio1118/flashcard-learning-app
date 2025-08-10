@@ -57,19 +57,18 @@ export const StudyProvider = ({ children }) => {
       timestamp: new Date().toISOString()
     };
 
+    // 楽観的更新：先にローカル統計を更新
+    setStudyStats(prev => ({
+      ...prev,
+      totalStudied: prev.totalStudied + 1,
+      correctAnswers: isCorrect ? prev.correctAnswers + 1 : prev.correctAnswers,
+      incorrectAnswers: isCorrect ? prev.incorrectAnswers : prev.incorrectAnswers + 1,
+      streak: isCorrect ? prev.streak + 1 : 0,
+      bestStreak: isCorrect && prev.streak + 1 > prev.bestStreak ? prev.streak + 1 : prev.bestStreak
+    }));
+
     try {
       await axios.post('/api/study/answer', answerData);
-
-      // ローカル統計を更新
-      setStudyStats(prev => ({
-        ...prev,
-        totalStudied: prev.totalStudied + 1,
-        correctAnswers: isCorrect ? prev.correctAnswers + 1 : prev.correctAnswers,
-        incorrectAnswers: isCorrect ? prev.incorrectAnswers : prev.incorrectAnswers + 1,
-        streak: isCorrect ? prev.streak + 1 : 0,
-        bestStreak: isCorrect && prev.streak + 1 > prev.bestStreak ? prev.streak + 1 : prev.bestStreak
-      }));
-
     } catch (error) {
       console.error('Failed to record answer:', error);
       
@@ -79,23 +78,21 @@ export const StudyProvider = ({ children }) => {
           const offlineAnswers = JSON.parse(localStorage.getItem('offlineAnswers') || '[]');
           offlineAnswers.push(answerData);
           localStorage.setItem('offlineAnswers', JSON.stringify(offlineAnswers));
-          
-          // ローカル統計は更新
-          setStudyStats(prev => ({
-            ...prev,
-            totalStudied: prev.totalStudied + 1,
-            correctAnswers: isCorrect ? prev.correctAnswers + 1 : prev.correctAnswers,
-            incorrectAnswers: isCorrect ? prev.incorrectAnswers : prev.incorrectAnswers + 1,
-            streak: isCorrect ? prev.streak + 1 : 0,
-            bestStreak: isCorrect && prev.streak + 1 > prev.bestStreak ? prev.streak + 1 : prev.bestStreak
-          }));
-          
           toast.success('オフラインで記録しました');
         } catch (storageError) {
           console.error('Failed to save offline answer:', storageError);
           toast.error('回答の記録に失敗しました');
         }
       } else {
+        // API通信失敗時は統計をロールバック
+        setStudyStats(prev => ({
+          ...prev,
+          totalStudied: prev.totalStudied - 1,
+          correctAnswers: isCorrect ? prev.correctAnswers - 1 : prev.correctAnswers,
+          incorrectAnswers: isCorrect ? prev.incorrectAnswers : prev.incorrectAnswers - 1,
+          streak: isCorrect ? prev.streak - 1 : prev.streak + 1,
+          bestStreak: prev.bestStreak // bestStreakは戻さない
+        }));
         toast.error('回答の記録に失敗しました');
       }
     }

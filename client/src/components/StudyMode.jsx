@@ -50,12 +50,15 @@ const StudyMode = () => {
     if (answered || !currentWord) return;
 
     setAnswered(true);
-    await recordAnswer(currentWord.id, isCorrect);
-
-    // 1秒後に次の単語へ
-    setTimeout(() => {
-      nextWord();
-    }, 1000);
+    
+    // 即座に次の単語に進む（楽観的更新）
+    nextWord();
+    
+    // API通信は非同期で実行（エラーハンドリングも含む）
+    recordAnswer(currentWord.id, isCorrect).catch(error => {
+      console.error('Failed to record answer:', error);
+      // 必要に応じてユーザーに通知
+    });
   };
 
   const handleSkip = () => {
@@ -175,13 +178,7 @@ const StudyMode = () => {
             </div>
           )}
 
-          {answered && (
-            <div className="text-center">
-              <div className="glass-morphism rounded-lg p-4 mb-4">
-                <p className="text-white">次の単語に移動します...</p>
-              </div>
-            </div>
-          )}
+
 
           {/* ナビゲーションボタン */}
           <div className="flex justify-between items-center">
