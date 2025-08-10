@@ -30,6 +30,7 @@ const StudyMode = () => {
 
   useEffect(() => {
     // 新しい単語になったらカードをリセット
+    console.log('🔄 Resetting card state for word index:', currentWordIndex);
     setIsFlipped(false);
     setShowAnswer(false);
     setAnswered(false);
@@ -51,21 +52,14 @@ const StudyMode = () => {
 
     setAnswered(true);
     
-    // 短い遅延後に次の単語に進む（カード状態をリセットしてから）
+    // 短い遅延後に次の単語に進む
     setTimeout(() => {
-      // カード状態を先にリセット
-      setIsFlipped(false);
-      setShowAnswer(false);
-      setAnswered(false);
-      
-      // 次の単語に進む
-      nextWord();
-    }, 300); // 300ms = 0.3秒の短い遅延
+      nextWord(); // useEffectが自動的に状態をリセット
+    }, 300);
     
     // API通信は非同期で実行（エラーハンドリングも含む）
     recordAnswer(currentWord.id, isCorrect).catch(error => {
       console.error('Failed to record answer:', error);
-      // 必要に応じてユーザーに通知
     });
   };
 
